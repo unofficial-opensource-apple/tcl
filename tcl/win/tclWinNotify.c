@@ -10,10 +10,14 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclWinNotify.c,v 1.1.1.4 2002/04/05 16:14:15 jevans Exp $
+ * RCS: @(#) $Id: tclWinNotify.c,v 1.1.1.5 2003/03/06 00:15:47 landonf Exp $
  */
 
 #include "tclWinInt.h"
+
+/*
+ * The follwing static indicates whether this module has been initialized.
+ */
 
 #define INTERVAL_TIMER 1	/* Handle of interval timer. */
 
@@ -142,6 +146,20 @@ Tcl_FinalizeNotifier(clientData)
     ClientData clientData;	/* Pointer to notifier data. */
 {
     ThreadSpecificData *tsdPtr = (ThreadSpecificData *) clientData;
+
+    /*
+     * Only finalize the notifier if a notifier was installed in the
+     * current thread; there is a route in which this is not
+     * guaranteed to be true (when tclWin32Dll.c:DllMain() is called
+     * with the flag DLL_PROCESS_DETACH by the OS, which could be
+     * doing so from a thread that's never previously been involved
+     * with Tcl, e.g. the task manager) so this check is important.
+     *
+     * Fixes Bug #217982 reported by Hugh Vu and Gene Leache.
+     */
+    if (tsdPtr == NULL) {
+	return;
+    }
 
     DeleteCriticalSection(&tsdPtr->crit);
     CloseHandle(tsdPtr->event);
@@ -503,5 +521,39 @@ void
 Tcl_Sleep(ms)
     int ms;			/* Number of milliseconds to sleep. */
 {
-    Sleep(ms);
+    /*
+     * Simply calling 'Sleep' for the requisite number of milliseconds
+     * can make the process appear to wake up early because it isn't
+     * synchronized with the CPU performance counter that is used in
+     * tclWinTime.c.  This behavior is probably benign, but messes
+     * up some of the corner cases in the test suite.  We get around
+     * this problem by repeating the 'Sleep' call as many times
+     * as necessary to make the clock advance by the requisite amount.
+     */
+
+    Tcl_Time now;		/* Current wall clock time */
+    Tcl_Time desired;		/* Desired wakeup time */
+    DWORD sleepTime = ms;	/* Time to sleep */
+
+    Tcl_GetTime( &now );
+    desired.sec = now.sec + ( ms / 1000 );
+    desired.usec = now.usec + 1000 * ( ms % 1000 );
+    if ( desired.usec > 1000000 ) {
+	++desired.sec;
+	desired.usec -= 1000000;
+    }
+	
+    for ( ; ; ) {
+	Sleep( sleepTime );
+	Tcl_GetTime( &now );
+	if ( now.sec > desired.sec ) {
+	    break;
+	} else if ( ( now.sec == desired.sec )
+	     && ( now.usec >= desired.usec ) ) {
+	    break;
+	}
+	sleepTime = ( ( 1000 * ( desired.sec - now.sec ) )
+		      + ( ( desired.usec - now.usec ) / 1000 ) );
+    }
+
 }

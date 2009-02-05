@@ -24,7 +24,8 @@
 
 package require Tcl 8.2
 # keep this in sync with pkgIndex.tcl
-package provide http 2.4
+# and with the install directories in Makefiles
+package provide http 2.4.2
 
 namespace eval http {
     variable http
@@ -170,7 +171,7 @@ proc http::Finish { token {errormsg ""} {skipCB 0}} {
 		set state(status) error
 	    }
 	}
-	if {[info exist state(-command)]} {
+	if {[info exists state(-command)]} {
 	    # Command callback may already have unset our state
 	    unset state(-command)
 	}
@@ -198,7 +199,7 @@ proc http::reset { token {why reset} } {
     if {[info exists state(error)]} {
 	set errorlist $state(error)
 	unset state
-	eval error $errorlist
+	eval ::error $errorlist
     }
 }
 
@@ -404,7 +405,13 @@ proc http::geturl { url args } {
     if {[catch {
 	puts $s "$how $srvurl HTTP/1.0"
 	puts $s "Accept: $http(-accept)"
-	puts $s "Host: $host:$port"
+	if {$port == $defport} {
+	    # Don't add port in this case, to handle broken servers.
+	    # [Bug #504508]
+	    puts $s "Host: $host"
+	} else {
+	    puts $s "Host: $host:$port"
+	}
 	puts $s "User-Agent: $http(-useragent)"
 	foreach {key value} $state(-headers) {
 	    regsub -all \[\n\r\]  $value {} value
@@ -549,7 +556,7 @@ proc http::error {token} {
 proc http::cleanup {token} {
     variable $token
     upvar 0 $token state
-    if {[info exist state]} {
+    if {[info exists state]} {
 	unset state
     }
 }
