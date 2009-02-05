@@ -5,7 +5,7 @@
 # "autoconf" program (constructs like "@foo@" will get replaced in the
 # actual Makefile.
 #
-# RCS: @(#) $Id: Makefile.in,v 1.10 2003/03/06 19:29:03 landonf Exp $
+# RCS: @(#) $Id: Makefile.in,v 1.12 2003/07/23 01:02:10 landonf Exp $
 
 VERSION 		= @TCL_VERSION@
 MAJOR_VERSION		= @TCL_MAJOR_VERSION@
@@ -683,7 +683,7 @@ install-doc: doc
 	@if test ! -x $(UNIX_DIR)/mkLinks; then \
 	    chmod +x $(UNIX_DIR)/mkLinks; \
 	    fi
-	@for i in $(MAN_INSTALL_DIR) $(MAN1_INSTALL_DIR) $(MAN3_INSTALL_DIR) ; \
+	@for i in $(MAN_INSTALL_DIR) $(MAN1_INSTALL_DIR) $(MAN3_INSTALL_DIR) $(MANN_INSTALL_DIR) ; \
 	    do \
 	    if [ ! -d $$i ] ; then \
 		echo "Making directory $$i"; \
@@ -712,6 +712,16 @@ install-doc: doc
 	    done;
 	@echo "Cross-linking C API (.3) docs";
 	@$(UNIX_DIR)/mkLinks $(MKLINKS_FLAGS) $(MAN3_INSTALL_DIR)
+	@echo "Installing command (.n) docs";
+	@cd $(TOP_DIR)/doc; for i in *.n; \
+	    do \
+	    rm -f $(MANN_INSTALL_DIR)/$$i; \
+	    sed -e '/man\.macros/r man.macros' -e '/man\.macros/d' \
+		    $$i > $(MANN_INSTALL_DIR)/$$i; \
+	    chmod 444 $(MANN_INSTALL_DIR)/$$i; \
+	    done;
+	@echo "Cross-linking command (.n) docs";
+	@$(UNIX_DIR)/mkLinks $(MKLINKS_FLAGS) $(MANN_INSTALL_DIR)
 
 Makefile: $(UNIX_DIR)/Makefile.in $(DLTEST_DIR)/Makefile.in
 	$(SHELL) config.status
@@ -1201,10 +1211,8 @@ DISTROOT = /tmp/dist
 DISTNAME = tcl${VERSION}${PATCH_LEVEL}
 ZIPNAME	 = tcl${MAJOR_VERSION}${MINOR_VERSION}${PATCH_LEVEL}-src.zip
 DISTDIR	 = $(DISTROOT)/$(DISTNAME)
-$(UNIX_DIR)/configure: $(UNIX_DIR)/configure.in
-	autoconf $(UNIX_DIR)/configure.in > $(UNIX_DIR)/configure
 
-dist: $(UNIX_DIR)/configure mklinks
+dist: mklinks
 	rm -rf $(DISTDIR)
 	mkdir -p $(DISTDIR)/unix
 	cp -p $(UNIX_DIR)/*.c $(UNIX_DIR)/*.h $(DISTDIR)/unix
@@ -1335,9 +1343,12 @@ allpatch: dist
 # TOOL_DIR.
 #
 
-html: 
+html-tcl: EXTRA_HTML_ARGS=--tcl
+html-tk:  EXTRA_HTML_ARGS=--tk
+
+html html-tcl html-tk: 
 	$(TCL_EXE) $(TOOL_DIR)/tcltk-man2html.tcl --htmldir=$(DISTDIR)/html \
-		--srcdir=$(TOP_DIR)/..
+		--srcdir=$(TOP_DIR)/.. $(EXTRA_HTML_ARGS)
 
 #
 # Target to create a Macintosh version of the distribution.  This will

@@ -7,7 +7,7 @@
  * Copyright (c) 1999 by Scriptics Corporation.
  * All rights reserved.
  *
- * RCS: @(#) $Id: tclUnixInit.c,v 1.1.1.6 2003/03/06 00:15:31 landonf Exp $
+ * RCS: @(#) $Id: tclUnixInit.c,v 1.1.1.7 2003/07/09 01:34:07 landonf Exp $
  */
 
 #if defined(HAVE_CFBUNDLE)
@@ -1027,7 +1027,7 @@ TclpCheckStackSpace()
  *	TCL_OK if we have found the tcl library; TCL_ERROR otherwise.
  *
  * Side effects:
- *	Same as for Tcl_MacOSXOpenBundleResources.
+ *	Same as for Tcl_MacOSXOpenVersionedBundleResources.
  *
  *----------------------------------------------------------------------
  */
@@ -1035,8 +1035,8 @@ static int Tcl_MacOSXGetLibraryPath(Tcl_Interp *interp, int maxPathLen, char *tc
 {
     int foundInFramework = TCL_ERROR;
     if (strcmp(defaultLibraryDir, "@TCL_IN_FRAMEWORK@") == 0) {
-	foundInFramework = Tcl_MacOSXOpenBundleResources(interp, 
-	    "com.tcltk.tcllibrary", 0, maxPathLen, tclLibPath);
+	foundInFramework = Tcl_MacOSXOpenVersionedBundleResources(interp, 
+	    "com.tcltk.tcllibrary", TCL_VERSION, 0, maxPathLen, tclLibPath);
     }
     return foundInFramework;
 }

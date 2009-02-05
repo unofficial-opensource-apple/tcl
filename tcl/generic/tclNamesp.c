@@ -19,7 +19,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclNamesp.c,v 1.1.1.6 2003/03/06 00:10:49 landonf Exp $
+ * RCS: @(#) $Id: tclNamesp.c,v 1.1.1.7 2003/07/22 23:11:07 landonf Exp $
  */
 
 #include "tclInt.h"
@@ -908,9 +908,7 @@ Tcl_Export(interp, namespacePtr, pattern, resetListFirst)
 				  * in the specified namespace may be
 				  * exported. */
     int resetListFirst;		 /* If nonzero, resets the namespace's
-				  * export list before appending.
-				  * If 0, return an error if an imported
-				  * cmd conflicts with an existing one. */
+				  * export list before appending. */
 {
 #define INIT_EXPORT_PATTERNS 5    
     Namespace *nsPtr, *exportNsPtr, *dummyPtr;

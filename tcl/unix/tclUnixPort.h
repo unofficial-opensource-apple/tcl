@@ -19,7 +19,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclUnixPort.h,v 1.1.1.8 2003/03/06 00:15:33 landonf Exp $
+ * RCS: @(#) $Id: tclUnixPort.h,v 1.1.1.9 2003/07/09 01:34:07 landonf Exp $
  */
 
 #ifndef _TCLUNIXPORT
@@ -571,6 +571,13 @@ EXTERN char *          	TclpInetNtoa(struct in_addr);
 #define inet_ntoa(x)	TclpInetNtoa(x)
 #undef TclOSreaddir
 #define TclOSreaddir(x) TclpReaddir(x)
+#ifdef MAC_OSX_TCL
+/* 
+ * On Mac OS X, realpath is currently not
+ * thread safe, c.f. SF bug # 711232.
+ */
+#define NO_REALPATH
+#endif
 #else
 typedef int TclpMutex;
 #define	TclpMutexInit(a)

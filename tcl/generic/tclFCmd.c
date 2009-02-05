@@ -9,7 +9,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclFCmd.c,v 1.1.1.4 2003/03/06 00:10:23 landonf Exp $
+ * RCS: @(#) $Id: tclFCmd.c,v 1.1.1.5 2003/07/22 23:11:06 landonf Exp $
  */
 
 #include "tclInt.h"
@@ -658,6 +658,14 @@ CopyRenameOneFile(interp, source, target, copyFlag, force)
 	     * so it should be quite clear 
 	     */
 	    errfile = target;
+	    /* 
+	     * We now need to reset the result, because the above call,
+	     * if it failed, may have put an error message in place.
+	     * (Ideally we would prefer not to pass an interpreter in
+	     * above, but the channel IO code used by
+	     * TclCrossFilesystemCopy currently requires one)
+	     */
+	    Tcl_ResetResult(interp);
 	}
     }
     if ((copyFlag == 0) && (result == TCL_OK)) {

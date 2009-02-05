@@ -11,7 +11,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclEvent.c,v 1.1.1.6 2003/03/06 00:10:19 landonf Exp $
+ * RCS: @(#) $Id: tclEvent.c,v 1.1.1.7 2003/07/09 01:33:44 landonf Exp $
  */
 
 #include "tclInt.h"
@@ -763,13 +763,17 @@ void
 Tcl_Finalize()
 {
     ExitHandler *exitPtr;
-    ThreadSpecificData *tsdPtr;
 
     TclpInitLock();
     if (subsystemsInitialized != 0) {
 	subsystemsInitialized = 0;
 
-	tsdPtr = TCL_TSD_INIT(&dataKey);
+	/*
+	 * Ensure the thread-specific data is initialised as it is
+	 * used in Tcl_FinalizeThread()
+	 */
+
+	(void) TCL_TSD_INIT(&dataKey);
 
 	/*
 	 * Invoke exit handlers first.

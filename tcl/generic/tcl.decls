@@ -11,7 +11,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 # 
-# RCS: @(#) $Id: tcl.decls,v 1.1.1.5 2003/03/06 00:09:52 landonf Exp $
+# RCS: @(#) $Id: tcl.decls,v 1.1.1.6 2003/07/09 01:33:40 landonf Exp $
 
 library tcl
 
@@ -1457,7 +1457,7 @@ declare 411 generic {
 
 # Introduced in 8.4a2
 declare 412 generic {
-    int Tcl_JoinThread(Tcl_ThreadId id, int* result)
+    int Tcl_JoinThread(Tcl_ThreadId threadId, int* result)
 }
 declare 413 generic {
     int Tcl_IsChannelShared(Tcl_Channel channel)
@@ -1829,6 +1829,14 @@ declare 8 mac {
 declare 0 macosx {
     int Tcl_MacOSXOpenBundleResources(Tcl_Interp *interp,
 	    CONST char *bundleName,
+	    int hasResourceFile,
+	    int maxPathLen,
+	    char *libraryPath)
+}
+declare 1 macosx {
+    int Tcl_MacOSXOpenVersionedBundleResources(Tcl_Interp *interp,
+	    CONST char *bundleName,
+	    CONST char *bundleVersion,
 	    int hasResourceFile,
 	    int maxPathLen,
 	    char *libraryPath)

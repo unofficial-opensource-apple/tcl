@@ -10,7 +10,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: expr.test,v 1.1.1.5 2003/03/06 00:12:52 landonf Exp $
+# RCS: @(#) $Id: expr.test,v 1.1.1.6 2003/07/09 01:33:54 landonf Exp $
 
 if {[lsearch [namespace children] ::tcltest] == -1} {
     package require tcltest
@@ -297,8 +297,8 @@ test expr-8.11 {CompileEqualityExpr: error compiling equality arm} {
     catch {expr 2!=x} msg
     set msg
 } {syntax error in expression "2!=x": variable references require preceding $}
-test expr-8.14 {CompileBitAndExpr: equality expr} {expr {"a"eq"a"}} 1
-test expr-8.14 {CompileBitAndExpr: equality expr} {expr {"\374" eq "ü"}} 1
+test expr-8.12 {CompileBitAndExpr: equality expr} {expr {"a"eq"a"}} 1
+test expr-8.13 {CompileBitAndExpr: equality expr} {expr {"\374" eq "ü"}} 1
 test expr-8.14 {CompileBitAndExpr: equality expr} {expr 3eq2} 0
 test expr-8.15 {CompileBitAndExpr: equality expr} {expr 2.0eq2} 0
 test expr-8.16 {CompileBitAndExpr: equality expr} {expr 3.2ne2.2} 1

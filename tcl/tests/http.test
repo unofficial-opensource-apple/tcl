@@ -12,7 +12,7 @@
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
 #
-# RCS: @(#) $Id: http.test,v 1.1.1.6 2003/03/06 00:12:55 landonf Exp $
+# RCS: @(#) $Id: http.test,v 1.1.1.7 2003/07/22 23:11:12 landonf Exp $
 
 if {[lsearch [namespace children] ::tcltest] == -1} {
     package require tcltest 2
@@ -133,6 +133,7 @@ test http-3.3 {http::geturl} {
 
 set tail /a/b/c
 set url [info hostname]:$port/a/b/c
+set fullurl http://user:pass@[info hostname]:$port/a/b/c
 set binurl [info hostname]:$port/binary
 set posturl [info hostname]:$port/post
 set badposturl [info hostname]:$port/droppost
@@ -307,6 +308,11 @@ test http-3.13 {http::geturl socket leak test} {
     # No extra channels should be taken
     expr {[llength [file channels]] == $chanCount}
 } 1
+
+test http-3.14 "http::geturl $fullurl" {
+    set token [http::geturl $fullurl -validate 1]
+    http::code $token
+} "HTTP/1.0 200 OK"
 
 test http-4.1 {http::Event} {
     set token [http::geturl $url]

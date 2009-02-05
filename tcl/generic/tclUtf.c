@@ -8,7 +8,7 @@
  * See the file "license.terms" for information on usage and redistribution
  * of this file, and for a DISCLAIMER OF ALL WARRANTIES.
  *
- * RCS: @(#) $Id: tclUtf.c,v 1.1.1.4 2003/03/06 00:11:08 landonf Exp $
+ * RCS: @(#) $Id: tclUtf.c,v 1.1.1.5 2003/07/09 01:33:48 landonf Exp $
  */
 
 #include "tclInt.h"
@@ -1294,9 +1294,12 @@ Tcl_UniCharNcasecmp(cs, ct, n)
     unsigned long n;			/* Number of unichars to compare. */
 {
     for ( ; n != 0; n--, cs++, ct++) {
-	if ((*cs != *ct) &&
-		(Tcl_UniCharToLower(*cs) != Tcl_UniCharToLower(*ct))) {
-	    return (*cs - *ct);
+	if (*cs != *ct) {
+	    Tcl_UniChar lcs = Tcl_UniCharToLower(*cs);
+	    Tcl_UniChar lct = Tcl_UniCharToLower(*ct);
+	    if (lcs != lct) {
+		return (lcs - lct);
+	    }
 	}
     }
     return 0;

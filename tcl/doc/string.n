@@ -5,7 +5,7 @@
 '\" See the file "license.terms" for information on usage and redistribution
 '\" of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 '\" 
-'\" RCS: @(#) $Id: string.n,v 1.1.1.5 2003/03/06 00:09:40 landonf Exp $
+'\" RCS: @(#) $Id: string.n,v 1.1.1.6 2003/07/09 01:33:39 landonf Exp $
 '\" 
 .so man.macros
 .TH string n 8.1 Tcl "Tcl Built-In Commands"
@@ -119,7 +119,7 @@ false.
 .IP \fBgraph\fR 10
 Any Unicode printing character, except space.
 .IP \fBinteger\fR 10
-Any of the valid forms for an integer in Tcl, with optional
+Any of the valid forms for a 32-bit integer in Tcl, with optional
 surrounding whitespace.  In case of under/overflow in the value, 0 is
 returned and the \fIvarname\fR will contain \-1.
 .IP \fBlower\fR 10

@@ -12,7 +12,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: safe.tcl,v 1.1.1.5 2003/03/06 00:11:15 landonf Exp $
+# RCS: @(#) $Id: safe.tcl,v 1.1.1.6 2003/07/22 23:11:09 landonf Exp $
 
 #
 # The implementation is based on namespaces. These naming conventions
@@ -837,7 +837,15 @@ proc ::safe::setLogCmd {args} {
 	    error "\"$file\": is a directory"
 	}
 	set parent [file dirname $file]
-	if {[lsearch -exact $access_path $parent] == -1} {
+
+	# Normalize paths for comparison since lsearch knows nothing of
+	# potential pathname anomalies.
+	set norm_parent [file normalize $parent]
+	foreach path $access_path {
+	    lappend norm_access_path [file normalize $path]
+	}
+
+	if {[lsearch -exact $norm_access_path $norm_parent] == -1} {
 	    error "\"$file\": not in access_path"
 	}
     }

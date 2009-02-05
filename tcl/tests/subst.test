@@ -11,7 +11,7 @@
 # See the file "license.terms" for information on usage and redistribution
 # of this file, and for a DISCLAIMER OF ALL WARRANTIES.
 #
-# RCS: @(#) $Id: subst.test,v 1.1.1.6 2003/03/06 00:13:15 landonf Exp $
+# RCS: @(#) $Id: subst.test,v 1.1.1.7 2003/07/09 01:33:57 landonf Exp $
 
 if {[lsearch [namespace children] ::tcltest] == -1} {
     package require tcltest
@@ -34,6 +34,10 @@ test subst-2.2 {simple strings} {
 test subst-2.3 {simple strings} {
     subst abcdefg
 } abcdefg
+test subst-2.4 {simple strings} {
+    # Tcl Bug 685106
+    subst [bytestring bar\x00soom]
+} [bytestring bar\x00soom]
 
 test subst-3.1 {backslash substitutions} {
     subst {\x\$x\[foo bar]\\}
